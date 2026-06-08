@@ -57,7 +57,7 @@ public class StatSheet
     {
         Stat stat = _stats[statType];
 
-        if (stat.ModifierCount >= Stat.MaxModifiers) // DONKEY: handler modifier overflow policy
+        if (stat.ModifierCount >= Stat.MaxModifiers) // overflow policy: toss out new modifer.
         {
             return false;
         }
