@@ -47,4 +47,6 @@ public struct Blackboard
     /// Movement speed cap — leaf nodes may read this when moving.
     /// </summary>
     public float MoveSpeed;
+
+    public float RegenAccumulator;
 }

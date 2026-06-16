@@ -2,5 +2,6 @@ public enum StatType
 {
     HP,
     Speed,
-    Armor
+    Armor,
+    RegenRate,
 }

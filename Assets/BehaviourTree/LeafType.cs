@@ -4,5 +4,6 @@ public enum LeafType
     MoveToPlayer,
     Attack,
     RunAway,
+    Regen,
     Idle
 }

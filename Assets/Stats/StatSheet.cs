@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class StatSheet
 {
@@ -48,7 +49,14 @@ public class StatSheet
             }
         }
 
-        stat.CachedValue = (stat.BaseValue * multiplier) + additive;
+        float newMaxVal = (stat.BaseValue * multiplier) + additive;
+
+        if(stat.IsPool)
+        {
+            stat.CurrentValue = MathF.Min(stat.CurrentValue,newMaxVal);
+        }
+
+        stat.CachedValue = newMaxVal;
 
         stat.IsDirty = false;
     }
@@ -92,5 +100,35 @@ public class StatSheet
         }
 
         return false;
+    }
+
+    public float GetCurrentValue(StatType statType)
+    {
+        return _stats[statType].CurrentValue;
+    }
+
+    public void ApplyDelta(StatType statType, float delta)
+    {
+        if (_stats[statType].IsPool == false)
+        {
+            return; 
+        }
+
+        Stat stat = _stats[statType];
+        float maxVal = GetValue(statType);
+
+        stat.CurrentValue = Mathf.Clamp(stat.CurrentValue + delta, 0f, maxVal);
+        OnStatChanged?.Invoke(statType, stat.CurrentValue);
+    }
+
+    public void InitPool(StatType statType)
+    {
+        Stat stat = _stats[statType];
+        stat.IsPool = true;
+        stat.CurrentValue = GetValue(statType);
+    }
+    public bool IsPool(StatType statType) 
+    { 
+        return _stats[statType].IsPool; 
     }
 }

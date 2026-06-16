@@ -4,8 +4,10 @@ public class Stat
 
     public float BaseValue;
     public float CachedValue;
+    public float CurrentValue;
 
     public bool IsDirty;
+    public bool IsPool;
 
     public readonly StatModifier[] Modifiers = new StatModifier[MaxModifiers];
 

@@ -40,7 +40,6 @@ public class BehaviourTreeRunner : MonoBehaviour
     private const int DamageModifierId = 98;
 
     private bool _slowActive;
-    private bool _damageActive;
 
     // ── Public accessors for UI ───────────────────────────────────────────────
 
@@ -48,7 +47,6 @@ public class BehaviourTreeRunner : MonoBehaviour
     public StatSheet Stats => _statSheet;
 
     public bool SlowActive   => _slowActive;
-    public bool DamageActive => _damageActive;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -105,19 +103,9 @@ public class BehaviourTreeRunner : MonoBehaviour
         }
     }
 
-    public void ToggleDamage()
+    public void ApplyDelta(StatType statType,float delta)
     {
-        if (_damageActive)
-        {
-            _statSheet.RemoveModifier(StatType.HP, DamageModifierId);
-            _damageActive = false;
-        }
-        else
-        {
-            _statSheet.AddModifier(StatType.HP,
-                new StatModifier(ModifierType.Additive, -80f, DamageModifierId));
-            _damageActive = true;
-        }
+        _statSheet.ApplyDelta(statType, delta);
     }
 
     // ── Tree construction ─────────────────────────────────────────────────────
@@ -166,8 +154,12 @@ public class BehaviourTreeRunner : MonoBehaviour
         // [7] MoveToPlayer Leaf — child of Decorator [3]
         tree.AddLeaf(parent: 3, action: LeafType.MoveToPlayer);
 
+        tree.AddSequence(parent: 5, firstChild: 9, childCount: 2);
+
         // [8] RunAway Leaf — child of Decorator [5]
-        tree.AddLeaf(parent: 5, action: LeafType.RunAway);
+        tree.AddLeaf(parent: 8, action: LeafType.RunAway);
+
+        tree.AddLeaf(parent: 8, action: LeafType.Regen);
 
         return tree;
     }
@@ -178,6 +170,8 @@ public class BehaviourTreeRunner : MonoBehaviour
         sheet.AddBaseStat(StatType.HP,    _baseHP);
         sheet.AddBaseStat(StatType.Speed, _baseSpeed);
         sheet.AddBaseStat(StatType.Armor, _baseArmor);
+        sheet.AddBaseStat(StatType.RegenRate, 20f);
+        sheet.InitPool(StatType.HP);
         return sheet;
     }
 }

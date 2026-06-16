@@ -34,6 +34,7 @@ public class EnemyDebugUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _slowButtonText;
     [SerializeField] private TextMeshProUGUI _damageButtonText;
 
+    private bool _damageActive;
     private void Start()
     {
         if (_slowButton  != null) _slowButton.onClick.AddListener(OnSlowClicked);
@@ -72,7 +73,7 @@ public class EnemyDebugUI : MonoBehaviour
         if (_slowButtonText  != null)
             _slowButtonText.text  = _runner.SlowActive   ? "Remove Slow"   : "Apply Slow (Speed x0.4)";
         if (_damageButtonText != null)
-            _damageButtonText.text = _runner.DamageActive ? "Restore HP"    : "Deal 80 Damage";
+            _damageButtonText.text = _damageActive ? "Restore HP"    : "Deal 80 Damage";
     }
 
     private void OnSlowClicked()
@@ -82,6 +83,15 @@ public class EnemyDebugUI : MonoBehaviour
 
     private void OnDamageClicked()
     {
-        _runner.ToggleDamage();
+        if(_damageActive)
+        {
+            _runner.ApplyDelta(StatType.HP, 80f);
+            _damageActive = false;
+        }
+        else
+        {
+            _runner.ApplyDelta(StatType.HP, -80f);
+            _damageActive = true;
+        }
     }
 }

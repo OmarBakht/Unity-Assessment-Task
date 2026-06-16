@@ -31,7 +31,7 @@ public static class LeafActions
 
     public static NodeState Attack(ref Blackboard bb)
     {
-        Debug.Log("ATTACK!");
+        //Debug.Log("ATTACK!");
         if (bb.Self == null || bb.Target == null)
             return NodeState.Failure;
 
@@ -58,11 +58,26 @@ public static class LeafActions
 
         bb.Self.position += (Vector3)(flee * bb.MoveSpeed * bb.DeltaTime);
 
-        return NodeState.Running;
+        return NodeState.Success;
     }
 
     public static NodeState Idle(ref Blackboard bb)
     {
+        return NodeState.Success;
+    }
+
+    public static NodeState Regen(ref Blackboard bb)
+    {
+        Debug.Log("REGEN");
+        bb.RegenAccumulator += bb.DeltaTime;
+
+        if(bb.RegenAccumulator >= 1f)
+        {
+            bb.RegenAccumulator = 0f;
+            float regenAmount = bb.Stats.GetValue(StatType.RegenRate);
+            bb.Stats.ApplyDelta(StatType.HP, regenAmount);
+        }
+
         return NodeState.Success;
     }
 }

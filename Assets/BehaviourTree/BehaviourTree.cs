@@ -349,8 +349,15 @@ public class BehaviourTree : System.IDisposable
     /// </summary>
     private NodeState TickThresholdDecorator(ref BTNode node, ref Blackboard bb)
     {
-        float statValue = bb.Stats.GetValue(node.ThresholdStat);
-
+        float statValue = 0;
+        if (bb.Stats.IsPool(node.ThresholdStat))
+        {
+            statValue = bb.Stats.GetCurrentValue(node.ThresholdStat);
+        }
+        else
+        {
+            statValue = bb.Stats.GetValue(node.ThresholdStat);
+        }
         // UNSURE: ThresholdIsNormalized requires knowing the base value.
         // Using absolute comparison only for now; base value not exposed on StatSheet.
         bool passed = node.Comparison switch
@@ -400,6 +407,7 @@ public class BehaviourTree : System.IDisposable
             LeafType.Attack => LeafActions.Attack(ref bb),
             LeafType.RunAway => LeafActions.RunAway(ref bb),
             LeafType.Idle => LeafActions.Idle(ref bb),
+            LeafType.Regen => LeafActions.Regen(ref bb),
             _ => NodeState.Failure
         };
     }

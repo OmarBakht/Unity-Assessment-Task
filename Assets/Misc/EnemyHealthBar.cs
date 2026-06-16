@@ -43,7 +43,7 @@ public class EnemyHealthBar : MonoBehaviour
     {
         if (_runner == null || _runner.Stats == null) return;
 
-        float hp      = _runner.Stats.GetValue(StatType.HP);
+        float hp      = _runner.Stats.GetCurrentValue(StatType.HP);
         float ratio   = Mathf.Clamp01(hp / _maxHP);
 
         // Scale fill width from the left edge
