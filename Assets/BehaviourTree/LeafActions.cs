@@ -31,6 +31,7 @@ public static class LeafActions
 
     public static NodeState Attack(ref Blackboard bb)
     {
+        Debug.Log("ATTACK!");
         if (bb.Self == null || bb.Target == null)
             return NodeState.Failure;
 

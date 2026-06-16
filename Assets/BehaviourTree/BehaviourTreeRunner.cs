@@ -134,41 +134,40 @@ public class BehaviourTreeRunner : MonoBehaviour
     ///       ├── StatThresholdDecorator [6]  (HP below 30%)
     ///       └── Leaf: RunAway [7]
     ///
-    /// Index layout (flat array):
-    ///   [0] Selector        firstChild=1, childCount=2
-    ///   [1] Sequence        firstChild=2, childCount=3, parent=0
-    ///   [2] Decorator(HP>)  firstChild=3, childCount=1, parent=1
-    ///   [3] Leaf(Move)      parent=2
-    ///   [4] Leaf(Attack)    parent=1
-    ///   [5] Sequence        firstChild=6, childCount=2, parent=0
-    ///   [6] Decorator(HP<)  firstChild=7, childCount=1, parent=5
-    ///   [7] Leaf(RunAway)   parent=6
     /// </summary>
     private BehaviourTree BuildTree(StatSheet statSheet)
     {
         var tree = new BehaviourTree();
         tree.Init(statSheet);
 
+        // [0] Root Selector — children at 1, 2
         tree.AddSelector(parent: -1, firstChild: 1, childCount: 2);
 
-        tree.AddSequence(parent: 0, firstChild: 2, childCount: 3);
+        // [1] Attack Sequence — children at 3, 4
+        tree.AddSequence(parent: 0, firstChild: 3, childCount: 2);
 
-        tree.AddStatThresholdDecorator(
-            parent: 1, firstChild: 3,
-            stat: StatType.HP, threshold: 30f,
-            comparison: ComparisonType.Above);
+        // [2] Flee Sequence — children at 5, 6
+        tree.AddSequence(parent: 0, firstChild: 5, childCount: 2);
 
-        tree.AddLeaf(parent: 2, action: LeafType.MoveToPlayer);
+        // [3] HP above 30 Decorator — child at 7
+        tree.AddStatThresholdDecorator(parent: 1, firstChild: 7,
+            stat: StatType.HP, threshold: 30f, comparison: ComparisonType.Above);
+
+        // [4] Attack Leaf
         tree.AddLeaf(parent: 1, action: LeafType.Attack);
 
-        tree.AddSequence(parent: 0, firstChild: 6, childCount: 2);
+        // [5] HP below 30 Decorator — child at 8
+        tree.AddStatThresholdDecorator(parent: 2, firstChild: 8,
+            stat: StatType.HP, threshold: 30f, comparison: ComparisonType.Below);
 
-        tree.AddStatThresholdDecorator(
-            parent: 5, firstChild: 7,
-            stat: StatType.HP, threshold: 30f,
-            comparison: ComparisonType.Below);
+        // [6] RunAway Leaf — direct child of Sequence [2]
+        tree.AddLeaf(parent: 2, action: LeafType.RunAway);
 
-        tree.AddLeaf(parent: 6, action: LeafType.RunAway);
+        // [7] MoveToPlayer Leaf — child of Decorator [3]
+        tree.AddLeaf(parent: 3, action: LeafType.MoveToPlayer);
+
+        // [8] RunAway Leaf — child of Decorator [5]
+        tree.AddLeaf(parent: 5, action: LeafType.RunAway);
 
         return tree;
     }
